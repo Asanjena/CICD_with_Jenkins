@@ -134,3 +134,5 @@ $ git checkout -b dev
 7. If this is successful, we can then go back to the first job we made (alema-ci) and link it  to the merge job (alema-cici-merge). To do this on the first job, navigate to 'post build actions' > 'Build other projects'  and for 'projects to build', enter your merge job. 
 
 8. This should mean that our changes are automatically tested, and if the tests are successful, they should be merged to our repos main branch. 
+
+123
