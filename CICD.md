@@ -104,4 +104,33 @@ In configuration settings, got o Office 365 Connectors, and tick 'restrict where
 
 
 
-....
+
+## Continuous delivery 
+
+Automating the merge process from development to main branch 
+
+1. Create a dev branch and checkout use
+
+$ git checkout -b dev
+
+
+
+2. Create another job on Jenkins e.g. alema-ci
+
+
+3. Under source management, make sure that the job will track the dev branch:
+
+![Alt text](images/dev.PNG)
+
+
+4. Create another job to merge the development changes to the main branch. e.g. alema-cicd-merge
+
+5. Again, make sure that this will track changes from the dev branch. Wwe also need to ad an 'Additional Behaviours' section to 'Merge before build':
+
+![Alt text](images/merge-before-build.PNG)
+
+6. We can then mannually check that the merge works by clicking 'Build now'
+
+7. If this is successful, we can then go back to the first job we made (alema-ci) and link it  to the merge job (alema-cici-merge). To do this on the first job, navigate to 'post build actions' > 'Build other projects'  and for 'projects to build', enter your merge job. 
+
+8. This should mean that our changes are automatically tested, and if the tests are successful, they should be merged to our repos main branch. 
