@@ -78,13 +78,13 @@ We can then select 'SSH Username with private key' and enter an ID for the key a
 
 1. Go to your GitHub repository and click on ‘Settings’.
 
-2.  Click on Webhooks and then click on ‘Add webhook’.
+2. Click on Webhooks and then click on ‘Add webhook’.
 
 ![Alt text](../aws_s3/w1.PNG)
 
 3. In the ‘Payload URL’ field, paste your Jenkins environment URL. At the end of this URL add /github-webhook/. In the ‘Content type’ select: ‘application/json’ and leave the ‘Secret’ field empty.
 
-4.  In the page ‘Which events would you like to trigger this webhook?’ choose 'just push the event' and click on ‘add webhook’.
+4. In the page ‘Which events would you like to trigger this webhook?’ choose 'just push the event' and click on ‘add webhook’.
 
 5. In Jenkins, create a new job. Following our previous steps
 
@@ -105,34 +105,103 @@ In configuration settings, got o Office 365 Connectors, and tick 'restrict where
 
 
 
+## Pipeline
+
+![Alt text](images/pipeline.PNG)
+
+
 ## Continuous delivery 
 
-Automating the merge process from development to main branch 
 
-1. Create a dev branch and checkout use
+## Step 1 
 
-$ git checkout -b dev
+To Automate the merging process from development to main branch: 
+
+1. Create a dev branch and checkout using:
+
+```
+git checkout -b dev
+```
+
+Create a new job e.g., alema-ci
+
+### General section
+3. Like before, discard old builds (e.g., set max build to keep 3)
+
+4. For GitHub project, add your repo's http url 
+
+### Source Code Management
+1. select git
+2. Add your repo's SSH url
+3. In credentials, add your key
+4. In branches to build, specify '*/dev'
+
+
+### Build Triggers
+1. select GitHub hook trigger for Gitscm polling 
+
+
+### Build environment
+1. Select 'provide Node & npm bin/folder to path'
+2. Select SSH Agent
+3. Also select specific credentials and add the 'tech230.pem' key
 
 
 
-2. Create another job on Jenkins e.g. alema-ci
+## Step 2 
+
+Create job 2 - to merge the development changes to the main branch.
+
+1. Create a second job called alema-ci-merge
+
+2. Go through previous steps e.g., discard old builds, github project > add github repo http url, office 365 connector > restrict where project can be run to sparta-ubuntu-node
 
 
-3. Under source management, make sure that the job will track the dev branch:
+3. Source code management > git > ssh url & credidentials > branch specifier > */dev 
 
-![Alt text](images/dev.PNG)
+4. additional behaviours > origin, main, default, --ff
+
+5. build triggers > build after other project are built > trigger only if build is stable 
+
+![Alt text](images/job2-1.PNG)
+
+6. skip build env
+
+7.  Build > in execute shell enter 'git checkout main' and 'git merge origin/dev' 
+
+```
+git checkout main
+git merge origin/dev
+```
 
 
-4. Create another job to merge the development changes to the main branch. e.g. alema-cicd-merge
 
-5. Again, make sure that this will track changes from the dev branch. Wwe also need to ad an 'Additional Behaviours' section to 'Merge before build':
+## Step 3 
 
-![Alt text](images/merge-before-build.PNG)
+Create job 3 
 
-6. We can then mannually check that the merge works by clicking 'Build now'
+1. Same office 365 connector section as above
 
-7. If this is successful, we can then go back to the first job we made (alema-ci) and link it  to the merge job (alema-cici-merge). To do this on the first job, navigate to 'post build actions' > 'Build other projects'  and for 'projects to build', enter your merge job. 
+2. Source code management > select git > add repo http url > add key
 
-8. This should mean that our changes are automatically tested, and if the tests are successful, they should be merged to our repos main branch. 
+3. Build triggers > select build after other projects are built. In projects to watch, add your second job e.g. 'alema_ci_merge'. Then make sure to select 'trigger only if build is stable' 
 
-123
+4. In build environment, select 'SSH Agent'. In credentials > specify credentials > add the key 'tech230.pem'
+
+5. Add in your commands as shown below:
+
+```
+ssh -o "StrictHostKeyChecking=no" ubuntu@52.17.211.146 <<EOF
+sudo rsync -rv --exclude=".git" /home/ubuntu/app/
+cd /home/ubuntu/app
+pm2 kill
+pm2 start app.js
+EOF
+```
+
+In the commands, followin 'ubuntu@' enter your EC2 instances public IP address.
+
+
+6. To check that everything is working, you should be able to coppy and paste the instances public IP adress (using http) into a web browser and see the sparta app page:
+
+![Alt text](images/sapp1.PNG)
