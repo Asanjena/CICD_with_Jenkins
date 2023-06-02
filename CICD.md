@@ -207,52 +207,77 @@ In the commands, followin 'ubuntu@' enter your EC2 instances public IP address.
 ![Alt text](images/sapp1.PNG)
 
 
-### Creating a Jenkins server on AWS
+## Creating a Jenkins server on AWS
 
 1. Create an instance using ubuntu 18.04 LTS, and launch it
 
 2. In bash terminal, do update, and install java using the command:
 
 ```
+sudo apt update
+
 sudo apt install default-jre -y
 ```
 
 3. Add Repository key to the system
+
+```
 curl -fsSL https://pkg.jenkins.io/debian/jenkins.io-2023.key | sudo tee \
   /usr/share/keyrings/jenkins-keyring.asc > /dev/nul
-
+```
 
 4. Append debian package repo address to the system
+
 echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] \
   https://pkg.jenkins.io/debian binary/ | sudo tee \
   /etc/apt/sources.list.d/jenkins.list > /dev/null
 
 
-Update Ubuntu package
+5. Update Ubuntu package
+
+```
 sudo apt update
+```
 
+6. Install Jenkins
 
-Install Jenkins
+```
 sudo apt install jenkins -y
+```
 
+7. Start and enable jenkins:
+
+```
 sudo systemctl start jenkins
 
 sudo systemctl enable jenkins
 
 sudo systemctl status jenkins
+```
 
-Access Jenkins in web browser - add public ip adress with :8080 at the end 
 
-Use this command to see the password:
+8. You can then access Jenkins in web browser - add your ec2 instance public ip adress with ':8080' at the end 
+
+![Alt text](images/unlock-jenkins.PNG)
+
+9. Use this command (in git bash) to see the password:
+
 ```
 sudo cat /var/lib/jenkins/secrets/initialAdminPassword
 ```
 
-paste the password into where where it says 'administartor password' on the jenkins webpage  
+10. Paste the password into where where it says 'administartor password' on the jenkins webpage  
 
+![Alt text](images/password-jenkins.PNG)
 
-select 'install suggested plugins
+11. select 'install suggested plugins
 
+![Alt text](images/choose-install-plugins.PNG)
 
-Manage jenkins > manage plugins > Install necesary pluging e.g. aws, git and nodejs
+12. Navigate to Manage jenkins > manage plugins > Install necesary pluging e.g. aws, git and nodejs
 
+13. Configure the Nodejs plugin by going to your dashboard > manage jenkins > tools > Nodejs. I selected 14.0.0.
+
+Once You have everything installed, you can go ahead and create your jobs again:
+
+When you create job 1, remember to update your webhook with the new jenkins IP. 
