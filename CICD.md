@@ -205,3 +205,93 @@ In the commands, followin 'ubuntu@' enter your EC2 instances public IP address.
 6. To check that everything is working, you should be able to coppy and paste the instances public IP adress (using http) into a web browser and see the sparta app page:
 
 ![Alt text](images/sapp1.PNG)
+
+
+
+### Creating a jenkins server using AWS
+
+1. Create a ubuntu 18.04 instance on aws 
+
+2. SSh into instance
+
+3. Sudo apt update && upgrade
+
+4. Install Java using:
+
+```
+sudo apt install default-jre -y
+
+sudo apt update && Upgrade
+```
+
+Jenkins Setup
+
+5. Add Repository key to the system
+curl -fsSL https://pkg.jenkins.io/debian/jenkins.io-2023.key | sudo tee \
+  /usr/share/keyrings/jenkins-keyring.asc > /dev/null
+
+6. Append debian package repo address to the system
+echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] \
+  https://pkg.jenkins.io/debian binary/ | sudo tee \
+  /etc/apt/sources.list.d/jenkins.list > /dev/null
+
+
+7. sudo apt update
+
+8. Install Jenkins
+
+```
+sudo apt install jenkins -y
+```
+
+9.  Start Jenkins using the commands:
+
+```
+sudo systemctl start jenkins
+sudo systemctl enable jenkins
+sudo systemctl status jenkins
+```
+
+10. Access Jenkins in web browser by copying you ec2 instances public ip adress into a web browser. Follow this with ':8080' (after the ip adress in the web browser)
+
+11. You should see a page like the one below:
+
+![Alt text](images/unlock-jenkins.PNG)
+
+12. The next step is to generate the password using the command:
+
+```
+sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+```
+![Alt text](images/jenkins-password.PNG)
+
+13. Add the password to the jenkins web page 
+
+14. In the next page that comes up, select 'install suggested plugins'. We will add in more plugins later on
+
+15. Then create user name and password.
+Enter t user name as admin password as admin
+
+![Alt text](images/admin.PNG)
+
+After this step, you can officially use jenkins!
+
+16. To do the jobs we have done before, we will first need to add some more plug ins. Go to manage jenkins > plugins > and then add in all the relevant plug ins e.g.: Amazon EC2, NodeJS, Git Server, Git Push, SSH Agent, Office 365 Connector...
+
+17. You also want to configure nodejs. Go to manage jenkins > tools and do the following:
+
+in 'NodeJS installation'
+
+![Alt text](images/config-nodejs.PNG)
+
+18. Then proceed to making your 3 jobs. Remember to change the webhook to have your Jenkins IP adress.
+
+- We also no longer need to use the 'sparta-ubuntu-node' (as tests will now run on your own master node)
+
+- To allow for connection to github using ssh, we also need to go to manage jenkins > security > and scroll down to 'Git Host Key Verification Configuration' set it so that it will 'accept first connection':
+
+![Alt text](images/ssh-git-jenkins.PNG)
+
+- Remeber to creat an app-jenkins instance on aws before the 3rd job! Add to SG to allow your jenkins IP on port 22, enable public IP with port 8080...
+
+- Remember to add ssh keys for alema-jenkins and tech230.pem
