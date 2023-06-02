@@ -295,3 +295,5 @@ in 'NodeJS installation'
 - Remeber to creat an app-jenkins instance on aws before the 3rd job! Add to SG to allow your jenkins IP on port 22, enable public IP with port 8080...
 
 - Remember to add ssh keys for alema-jenkins and tech230.pem
+
+![Alt text](images/jobs-on-my-jenkins.PNG)
