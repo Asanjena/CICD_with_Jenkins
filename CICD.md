@@ -205,3 +205,54 @@ In the commands, followin 'ubuntu@' enter your EC2 instances public IP address.
 6. To check that everything is working, you should be able to coppy and paste the instances public IP adress (using http) into a web browser and see the sparta app page:
 
 ![Alt text](images/sapp1.PNG)
+
+
+### Creating a Jenkins server on AWS
+
+1. Create an instance using ubuntu 18.04 LTS, and launch it
+
+2. In bash terminal, do update, and install java using the command:
+
+```
+sudo apt install default-jre -y
+```
+
+3. Add Repository key to the system
+curl -fsSL https://pkg.jenkins.io/debian/jenkins.io-2023.key | sudo tee \
+  /usr/share/keyrings/jenkins-keyring.asc > /dev/nul
+
+
+4. Append debian package repo address to the system
+echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] \
+  https://pkg.jenkins.io/debian binary/ | sudo tee \
+  /etc/apt/sources.list.d/jenkins.list > /dev/null
+
+
+Update Ubuntu package
+sudo apt update
+
+
+Install Jenkins
+sudo apt install jenkins -y
+
+sudo systemctl start jenkins
+
+sudo systemctl enable jenkins
+
+sudo systemctl status jenkins
+
+Access Jenkins in web browser - add public ip adress with :8080 at the end 
+
+Use this command to see the password:
+```
+sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+```
+
+paste the password into where where it says 'administartor password' on the jenkins webpage  
+
+
+select 'install suggested plugins
+
+
+Manage jenkins > manage plugins > Install necesary pluging e.g. aws, git and nodejs
+
